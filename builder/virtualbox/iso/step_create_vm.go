@@ -5,10 +5,8 @@ package iso
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -34,14 +32,19 @@ func (s *stepCreateVM) Run(ctx context.Context, state multistep.StateBag) multis
 	name := config.VMName
 
 	commands := [][]string{}
-	commands = append(commands, []string{
-		"createvm", "--name", name, "--platform-architecture", "arm",
-		"--ostype", config.GuestOSType, "--register",
-	})
-	version, _ := driver.Version()
-	ioutil.WriteFile("/tmp/1.txt", []byte(version), os.ModePerm)
-	x, _ := json.Marshal(commands)
-	ioutil.WriteFile("/tmp/2.txt", x, os.ModePerm)
+
+	if strings.HasPrefix(runtime.GOARCH, "arm") {
+		commands = append(commands, []string{
+			"createvm", "--name", name,
+			"--platform-architecture", "arm",
+			"--ostype", config.GuestOSType, "--register",
+		})
+	} else {
+		commands = append(commands, []string{
+			"createvm", "--name", name,
+			"--ostype", config.GuestOSType, "--register",
+		})
+	}
 
 	commands = append(commands, []string{
 		"modifyvm", name,
@@ -55,9 +58,9 @@ func (s *stepCreateVM) Run(ctx context.Context, state multistep.StateBag) multis
 	commands = append(commands, []string{"modifyvm", name, "--usb", map[bool]string{true: "on", false: "off"}[config.HWConfig.USB]})
 
 	if strings.ToLower(config.HWConfig.Sound) == "none" {
-		commands = append(commands, []string{"modifyvm", name, "--audio-driver", config.HWConfig.Sound, "--audiocontroller", config.AudioController})
+		commands = append(commands, []string{"modifyvm", name, "--audio", config.HWConfig.Sound, "--audiocontroller", config.AudioController})
 	} else {
-		commands = append(commands, []string{"modifyvm", name, "--audio-driver", config.HWConfig.Sound, "--audioin", "on", "--audioout", "on", "--audiocontroller", config.AudioController})
+		commands = append(commands, []string{"modifyvm", name, "--audio", config.HWConfig.Sound, "--audioin", "on", "--audioout", "on", "--audiocontroller", config.AudioController})
 	}
 
 	commands = append(commands, []string{"modifyvm", name, "--chipset", config.Chipset})
