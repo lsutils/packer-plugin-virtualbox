@@ -20,5 +20,5 @@ with open(f'packer-plugin-virtualbox_{version}_SHA256SUMS', 'w', encoding='utf8'
 os.system('git add .')
 os.system('git commit -s -m "over"')
 os.system('git push liushuo')
-os.system('git tag {version}')
+os.system(f'git tag {version}')
 os.system('git push liushuo --tags')
