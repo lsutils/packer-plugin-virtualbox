@@ -35,8 +35,8 @@ func (s *stepCreateVM) Run(ctx context.Context, state multistep.StateBag) multis
 
 	commands := [][]string{}
 	commands = append(commands, []string{
-		"createvm", "--name", name,
-		"--ostype", config.GuestOSType, "--register", "--platform-architecture", "arm",
+		"createvm", "--name", name, "--platform-architecture", "arm",
+		"--ostype", config.GuestOSType, "--register",
 	})
 	version, _ := driver.Version()
 	ioutil.WriteFile("/tmp/1.txt", []byte(version), os.ModePerm)
