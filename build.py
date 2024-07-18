@@ -1,7 +1,7 @@
 import os
 import subprocess
-
-version = 'v2.0.0'
+os.system("rm -rf packer-plugin-virtualbox*")
+version = 'v2.0.2'
 x = []
 os.system(f'go build -o packer-plugin-virtualbox_{version}_x5.0_darwin_arm64 .')
 os.system(
