@@ -35,6 +35,10 @@ func (s *stepCreateVM) Run(ctx context.Context, state multistep.StateBag) multis
 		"createvm", "--name", name,
 		"--ostype", config.GuestOSType, "--register",
 	})
+	commands = append(commands, []string{"--platform-architecture", "arm"})
+	fmt.Println(driver.Version())
+	fmt.Println(commands)
+
 	commands = append(commands, []string{
 		"modifyvm", name,
 		"--boot1", "disk", "--boot2", "dvd", "--boot3", "none", "--boot4", "none",
