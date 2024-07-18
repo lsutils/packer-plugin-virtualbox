@@ -55,11 +55,9 @@ func (s *stepCreateVM) Run(ctx context.Context, state multistep.StateBag) multis
 	commands = append(commands, []string{"modifyvm", name, "--usb", map[bool]string{true: "on", false: "off"}[config.HWConfig.USB]})
 
 	if strings.ToLower(config.HWConfig.Sound) == "none" {
-		commands = append(commands, []string{"modifyvm", name, "--audio", config.HWConfig.Sound,
-			"--audiocontroller", config.AudioController})
+		commands = append(commands, []string{"modifyvm", name, "--audio-driver", config.HWConfig.Sound, "--audiocontroller", config.AudioController})
 	} else {
-		commands = append(commands, []string{"modifyvm", name, "--audio", config.HWConfig.Sound, "--audioin", "on", "--audioout", "on",
-			"--audiocontroller", config.AudioController})
+		commands = append(commands, []string{"modifyvm", name, "--audio-driver", config.HWConfig.Sound, "--audioin", "on", "--audioout", "on", "--audiocontroller", config.AudioController})
 	}
 
 	commands = append(commands, []string{"modifyvm", name, "--chipset", config.Chipset})
@@ -98,6 +96,7 @@ func (s *stepCreateVM) Run(ctx context.Context, state multistep.StateBag) multis
 
 	ui.Say("Creating virtual machine...")
 	for _, command := range commands {
+		ui.Message(fmt.Sprintf("my---->    Executing: %s", strings.Join(command, " ")))
 		err := driver.VBoxManage(command...)
 		if err != nil {
 			err := fmt.Errorf("Error creating VM: %s", err)
