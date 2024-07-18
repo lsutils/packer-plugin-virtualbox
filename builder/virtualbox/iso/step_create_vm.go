@@ -5,7 +5,10 @@ package iso
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 
@@ -36,8 +39,10 @@ func (s *stepCreateVM) Run(ctx context.Context, state multistep.StateBag) multis
 		"--ostype", config.GuestOSType, "--register",
 	})
 	commands = append(commands, []string{"--platform-architecture", "arm"})
-	fmt.Println(driver.Version())
-	fmt.Println(commands)
+	version, _ := driver.Version()
+	ioutil.WriteFile("/tmp/1.txt", []byte(version), os.ModePerm)
+	x, _ := json.Marshal(commands)
+	ioutil.WriteFile("/tmp/2.txt", x, os.ModePerm)
 
 	commands = append(commands, []string{
 		"modifyvm", name,
